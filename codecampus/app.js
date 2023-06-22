@@ -1,22 +1,20 @@
 require("dotenv").config();
+require("./config/mongoose");
+require("./config/sequelize");
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const exphbs = require("express-handlebars");
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
-const mongoose = require("mongoose");
+var flash = require("express-flash");
+var session = require("express-session");
+const { passport, setUser } = require("./utils/passport");
 
-mongoose
-  .connect(process.env.MONGODB_URL)
-  .then(() => {
-    console.log("MongoDB Connected");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+// var homeRouter = require("./routes/web/home-web-router");
+// var loginRouter = require("./routes/web/login-web-router");
+// var usersRouter = require("./routes/users");
+
 var app = express();
 
 // view engine setup
@@ -35,10 +33,32 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(
+  session({
+    secret: "keyboard cat",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(setUser);
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
+app.use((req, res, next) => {
+  if (req.session.flash) {
+    res.locals.flash = req.session.flash;
+    delete req.session.flash;
+  }
+
+  next();
+});
+
+app.use("/", require("./routes/web/home-web-router"));
+app.use("/login", require("./routes/web/login-web-router"));
+// app.use("/profile", require("./routes/web/profile-web-router"));
+// app.use("/users", usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
