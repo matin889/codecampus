@@ -7,13 +7,8 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const exphbs = require("express-handlebars");
-var flash = require("express-flash");
 var session = require("express-session");
 const { passport, setUser } = require("./utils/passport");
-
-// var homeRouter = require("./routes/web/home-web-router");
-// var loginRouter = require("./routes/web/login-web-router");
-// var usersRouter = require("./routes/users");
 
 var app = express();
 
@@ -57,7 +52,7 @@ app.use((req, res, next) => {
 
 app.use("/", require("./routes/web/home-web-router"));
 app.use("/login", require("./routes/web/login-web-router"));
-// app.use("/profile", require("./routes/web/profile-web-router"));
+app.use("/profile", require("./routes/web/profile-web-router"));
 // app.use("/users", usersRouter);
 
 // catch 404 and forward to error handler

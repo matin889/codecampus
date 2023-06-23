@@ -61,7 +61,7 @@ input[type="file"] {
 /* -- Header -- */
 
 header {
-  background: url("/img/header-bg.jpg");
+  background: url("/images/header.png");
   min-height: 300px;
   height: 35vh;
   background-position: center;
